@@ -1,49 +1,61 @@
 package main
 
 import (
-	"log"
+	"fmt"
 	"net"
 	"os"
-	"os/signal"
-	"syscall"
 )
 
-func main() {
-    socket, err := net.Listen("unix", "/tmp/gotem.sock")
-    if err != nil {
-        log.Fatal(err)
-    }
+func handleConnection(conn net.Conn, file *os.File) {
+    defer conn.Close()
 
-    c := make(chan os.Signal, 1)
-    signal.Notify(c, os.Interrupt, syscall.SIGTERM)
-    go func() {
-        <-c
-        socket.Close()
-        os.Exit(1)
-    }()
+    file.Write([]byte("Handling connection\n"))
 
+    buf := make([]byte, 1024)
     for {
-        conn, err := socket.Accept()
+        n, err := conn.Read(buf)
         if err != nil {
-            log.Fatal(err)
+            file.Write([]byte("Error reading\n"))
+            break
         }
 
-        go func(conn net.Conn) {
-            defer conn.Close()
-            // Create a buffer for incoming data.
-            buf := make([]byte, 4096)
+        message := string(buf[0:n])
+        fmt.Println("Received message:", message)
+        file.Write([] byte("Received message: " + message + "\n"))
+        if err != nil {
+            fmt.Println("Error sending response:", err.Error())
+            break
+        }
+    }
+}
 
-            // Read data from the connection.
-            n, err := conn.Read(buf)
-            if err != nil {
-                log.Fatal(err)
-            }
 
-            // Echo the data back to the connection.
-            _, err = conn.Write(buf[:n])
-            if err != nil {
-                log.Fatal(err)
-            }
-        }(conn)
+func main() {
+    os.Remove("/tmp/echo.sock")
+    os.Remove("/tmp/gotem.log")
+    os.WriteFile("/tmp/gotem.log", []byte("\n\n\nServer launch\n"), 0644)
+    file, _ := os.OpenFile("/tmp/gotem.log", os.O_APPEND|os.O_WRONLY, 0644)
+
+    l, err := net.Listen("unix", "/tmp/echo.sock")
+    if err != nil {
+        errLog := "Listen error: " + err.Error()
+        file.Write([]byte(errLog))
+    }
+    defer l.Close()
+
+
+    file.Write([]byte("Listening on /tmp/unixsock ... \n"))
+    for {
+        file.Write([]byte("Server loop\n"))
+        conn, err := l.Accept()
+        file.Write([]byte("Connection Accepted\n"))
+        if err != nil {
+            errLog := "Error accepting connection: " + err.Error()
+            file.Write([]byte(errLog))
+        }
+
+        file.Write([]byte("Accepted new connection\n"))
+
+        go handleConnection(conn, file)
     }
 }
