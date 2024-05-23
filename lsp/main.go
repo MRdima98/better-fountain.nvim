@@ -10,7 +10,7 @@ import (
 	_ "github.com/tliron/commonlog/simple"
 )
 
-const lsName = "gotem"
+const lsName = "better-fountain"
 
 var fileLog = "/tmp/lsp.log"
 
@@ -38,7 +38,7 @@ func main() {
 }
 
 func initialize(context *glsp.Context, params *protocol.InitializeParams) (any, error) {
-    commonlog.NewInfoMessage(0, "Initializing server...")
+    commonlog.NewInfoMessage(0, "Initializing server...").Send()
 
     capabilities := handler.CreateServerCapabilities()
 
@@ -65,7 +65,20 @@ func didOpen (context *glsp.Context, params *protocol.DidOpenTextDocumentParams)
 	pattern := `\n\n\b[A-Z]+\b`
     regex := regexp.MustCompile(pattern)
     matches := regex.FindAllString(params.TextDocument.Text, -1)
+    var uniqueMatches []string
     for _, match := range matches {
+        isPresent := false
+        for _, uniqueMatch := range uniqueMatches {
+            if uniqueMatch == match {
+                isPresent = true 
+            }
+        }
+        if !isPresent {
+            uniqueMatches = append(uniqueMatches, match)
+        }
+    }
+    commonlog.NewInfoMessage(0, matches...).Send()
+    for _, match := range uniqueMatches {
         tmp := match[2:]
         tmp += "\n"
         characters = append(characters, protocol.CompletionItem{
@@ -78,18 +91,10 @@ func didOpen (context *glsp.Context, params *protocol.DidOpenTextDocumentParams)
 }
 
 func didChange (context *glsp.Context, params *protocol.DidChangeTextDocumentParams) error {
-    hello := "CALEEN"
-    present := false
-    for _, char := range characters {
-        if "CALEEN" == char.Label {
-            present = true
-        }
-    }
-    if !present {
-        characters = append(characters, protocol.CompletionItem{
-            Label: hello,
-            InsertText: &hello,
-        })
+    // commonlog.NewDebugMessage(0, "LOLLONE").Send()
+    for _, el := range params.ContentChanges {
+        tmp := el.(string)
+        commonlog.NewInfoMessage(0, tmp).Send()
     }
     return nil
 }
