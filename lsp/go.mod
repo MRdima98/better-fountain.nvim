@@ -1,4 +1,4 @@
-module lsp
+module main
 
 go 1.21.3
 
