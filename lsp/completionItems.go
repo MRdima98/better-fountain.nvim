@@ -3,21 +3,25 @@ package main
 import (
 	"regexp"
 
+	"github.com/tliron/commonlog"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 type Fountain struct {
-	kind    string
+    kind    string
 	matches []string
 }
+var defaultHeadings = []string {  "INT.", "EXT.", "INT/EXT" }
 
 func UpdateCompletionList(content string) (symbols []protocol.CompletionItem) {
 	matches := getEveryMatch(content)
+    commonlog.NewInfoMessage(0, matches[0].matches...).Send()
 	for _, match := range matches {
-		for _, item := range match.matches {
+		for i, item := range match.matches {
 			symbols = append(symbols, protocol.CompletionItem{
-				Label:      match.kind,
-				InsertText: &item,
+                Documentation: match.kind,
+                Label:      item,
+				InsertText: &match.matches[i],
 			})
 		}
 	}
@@ -28,9 +32,15 @@ func UpdateCompletionList(content string) (symbols []protocol.CompletionItem) {
 func getEveryMatch(content string) (matches []Fountain) {
 	everyMatchPossibile := -1
 
-	sceneHeadingsRE := regexp.MustCompile(`(?i)^[ \\t]*([.](?![.])|(?:[*]{0,3}_?)(?:int|ext|est|int[.]?\/ext|i[.]?\/e)[. ])(.+?)(#[-.0-9a-z]+#)?$`)
+	sceneHeadingsRE, err := regexp.Compile(`(INT\.|EXT\.|INT/EXT).*- (DAY|NIGHT|DUSK|DAWN)`)
+    if err != nil {
+        commonlog.NewInfoMessage(0, "Invalid regex").Send()
+        commonlog.NewInfoMessage(0, err.Error()).Send()
+    }
+
 	sceneHeadings := sceneHeadingsRE.FindAllString(content, everyMatchPossibile)
 	sceneHeadings = removeRepeatedValues(sceneHeadings)
+    sceneHeadings = append(sceneHeadings, defaultHeadings...)
 	matches = append(matches, Fountain{"Heading", sceneHeadings})
 
 	return matches

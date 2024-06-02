@@ -2,7 +2,7 @@ package main
 
 import (
 	// "regexp"
-	"strconv"
+	// "strconv"
 
 	"github.com/tliron/commonlog"
 	"github.com/tliron/glsp"
@@ -92,20 +92,22 @@ func didOpen(context *glsp.Context, params *protocol.DidOpenTextDocumentParams) 
 	// 		InsertText: &tmp,
 	// 	})
 	// }
-	// characters = UpdateCompletionList(params.TextDocument.Text)
+	characters = UpdateCompletionList(params.TextDocument.Text)
+
+
 
 	return nil
 }
 
 func didChange(context *glsp.Context, params *protocol.DidChangeTextDocumentParams) error {
-	commonlog.NewInfoMessage(0, "Log outside loop").Send()
-	_, ok := params.ContentChanges[0].(protocol.TextDocumentContentChangeEventWhole)
-	commonlog.NewInfoMessage(0, "Whole assertion: "+strconv.FormatBool(ok)).Send()
+	// commonlog.NewInfoMessage(0, "Log outside loop").Send()
+	// _, ok := params.ContentChanges[0].(protocol.TextDocumentContentChangeEventWhole)
+	// commonlog.NewInfoMessage(0, "Whole assertion: "+strconv.FormatBool(ok)).Send()
 
-	for _, el := range params.ContentChanges {
-		tmp, _ := el.(protocol.TextDocumentContentChangeEvent)
-		commonlog.NewInfoMessage(0, tmp.Text).Send()
-	}
+	// for _, el := range params.ContentChanges {
+	// 	tmp, _ := el.(protocol.TextDocumentContentChangeEvent)
+	// 	commonlog.NewInfoMessage(0, tmp.Text).Send()
+	// }
 
 	return nil
 }
