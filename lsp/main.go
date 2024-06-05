@@ -14,7 +14,7 @@ import (
 
 const lsName = "better-fountain"
 
-var fileLog = "/tmp/lsp.log"
+var fileLog = "lsp.log"
 
 var version = "0.0.1"
 var handler protocol.Handler
@@ -93,8 +93,6 @@ func didOpen(context *glsp.Context, params *protocol.DidOpenTextDocumentParams) 
 	// 	})
 	// }
 	characters = UpdateCompletionList(params.TextDocument.Text)
-
-
 
 	return nil
 }
