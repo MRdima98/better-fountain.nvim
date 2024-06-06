@@ -83,3 +83,4 @@ func didClose(context *glsp.Context, params *protocol.DidCloseTextDocumentParams
 func didSave(context *glsp.Context, params *protocol.DidSaveTextDocumentParams) error {
 	return nil
 }
+
