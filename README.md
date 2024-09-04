@@ -5,7 +5,7 @@ Minimal port of better-fountain to Neovim, written in Golang.
 I like to text edit in neovim, I like to write screenplays and I like a neat LSP. 
 
 ## Example 
-![Alt Text](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZjJqMDl6dHE3M2tnemZjZXpuNmJjazc4ZWFsamVocmExdTd6Y3hjbiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/yPfFGAeNPtxwZFyY7C/giphy.gif)
+![Alt Text](https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExaHc1ZWEwbDYzZHNwYzk4cTZyaWM3dnQ5enVnb3Mxa24yMmV5aTB4dCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/yISwuBKb4SV1pCjMeL/giphy.gif)
 
 ## Install
 Using lazy:
